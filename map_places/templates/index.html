@@ -39,35 +39,7 @@
     }
   </style>
   <script id="places-geojson" type="application/json">
-    {
-      "type": "FeatureCollection",
-      "features": [
-        {
-          "type": "Feature",
-          "geometry": {
-            "type": "Point",
-            "coordinates": [37.62, 55.793676]
-          },
-          "properties": {
-            "title": "«Легенды Москвы",
-            "placeId": "moscow_legends",
-            "detailsUrl": "{% static 'places/moscow_legends.json' %}"
-          }
-        },
-        {
-          "type": "Feature",
-          "geometry": {
-            "type": "Point",
-            "coordinates": [37.64, 55.753676]
-          },
-          "properties": {
-            "title": "Крыши24.рф",
-            "placeId": "roofs24",
-            "detailsUrl": "{% static 'places/roofs24.json' %}"
-          }
-        }
-      ]
-    }
+    {{ places_geojson|safe }}
   </script>
 
   <script id="app-template" type="text/template">
@@ -89,7 +61,7 @@
 
         <h5 class="mb-3">{{ selectedPlace.title }}</h5>
 
-        <p>{{ selectedPlace.short_description }}</p>
+        <div v-html="selectedPlace.short_description" class="mb-3"></div>
 
         <div id="place-photos" class="carousel slide mb-3 shadow" data-ride="carousel" data-interval="5000">
           <ol class="carousel-indicators">
@@ -190,9 +162,13 @@
 
     let places = loadJSON('places-geojson');
     log.debug('Load GeoJSON for places', places);
+    console.log('Places loaded:', places);
+    console.log('Places features count:', places.features ? places.features.length : 'no features');
 
+    // Данные уже загружены из Django в HTML
 
-    L.geoJSON(places, {
+    function addPlacesToMap() {
+      L.geoJSON(places, {
         pointToLayer: function(geoJsonPoint, latlng) {
           if (geoJsonPoint.geometry.type != "Point"){
             return
@@ -224,7 +200,11 @@
           });
           return marker;
         }
-    }).addTo(map);
+      }).addTo(map);
+    }
+
+    // Добавляем места на карту сразу
+    addPlacesToMap();
 
     var sidebarApp = new Vue({
       el: '#sidebar-app',
@@ -283,13 +263,18 @@
       sidebarApp.loadingPlaceId = placeId;
 
       try {
-        let response = await fetch(detailsUrl);
+        let response = await fetch(detailsUrl, {
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
 
         if (!response.ok){
           return;
         }
 
         let data = await response.json();
+        console.log('Place data received:', data); // Отладочная информация
 
         if (sidebarApp.loadingPlaceId != placeId){
           // Place loading was cancelled by user
@@ -299,10 +284,12 @@
         sidebarApp.selectedPlace = {
           title: data.title,
           placeId: placeId,
-          imgs: data.imgs || [],
+          imgs: data.image_url ? [data.image_url] : [],
           short_description: data.description_short,
           long_description: data.description_long,
         };
+        
+        console.log('Selected place set:', sidebarApp.selectedPlace); // Отладочная информация
       } finally {
         if (sidebarApp.loadingPlaceId == placeId){
           sidebarApp.loadingPlaceId = null;

@@ -1,0 +1,13 @@
+{% extends "index.html" %}
+
+{% block title %}Место не найдено{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Место не найдено</h1>
+    <p>Запрашиваемое место не существует или было удалено.</p>
+    <a href="{% url 'places:places_list' %}" class="btn btn-primary">
+        Вернуться к списку мест
+    </a>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "index.html" %}
+
+{% block title %}Список мест{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Интересные места на карте</h1>
+    
+    <div class="places-list">
+        {% for place in places %}
+        <div class="place-card">
+            <h3>{{ place.title }}</h3>
+            <p>{{ place.description_short }}</p>
+            <p><strong>Координаты:</strong> {{ place.latitude }}, {{ place.longitude }}</p>
+            <a href="{% url 'places:place_detail' place.id %}" class="btn btn-primary">
+                Подробнее
+            </a>
+        </div>
+        {% empty %}
+        <p>Пока нет добавленных мест.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
