@@ -3,6 +3,22 @@ from django.utils.html import format_html
 from django.forms import ModelForm
 from django import forms
 from .models import Place, Photo
+from tinymce.widgets import TinyMCE
+
+
+class PlaceForm(ModelForm):
+    class Meta:
+        model = Place
+        fields = '__all__'
+        widgets = {
+            'description_long': TinyMCE(
+                attrs={'cols': 80, 'rows': 30},
+                mce_attrs={
+                    'selector': 'textarea#id_description_long',  # Явно указываем ID поля
+                }
+            ),
+            'description_short': forms.Textarea(attrs={'rows': 3}),
+        }
 
 
 class PhotoForm(ModelForm):
@@ -54,6 +70,7 @@ class PhotoInline(admin.TabularInline):
 
 @admin.register(Place)
 class PlaceAdmin(admin.ModelAdmin):
+    form = PlaceForm
     list_display = ('title', 'latitude', 'longitude', 'created_at')
     list_filter = ('created_at',)
     search_fields = ('title', 'description_short')

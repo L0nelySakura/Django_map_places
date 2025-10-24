@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 import os
+from tinymce.models import HTMLField
 
 
 def validate_image_file(value):
@@ -22,7 +23,7 @@ class Place(models.Model):
         verbose_name='Краткое описание',
         help_text='Краткое описание места'
     )
-    description_long = models.TextField(
+    description_long = HTMLField(  # Изменяем здесь
         verbose_name='Подробное описание',
         help_text='Подробное описание места'
     )
