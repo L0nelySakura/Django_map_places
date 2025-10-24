@@ -1,6 +1,15 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Place
+from .models import Place, Photo
+
+
+class PhotoInline(admin.TabularInline):
+    """Inline админка для фотографий"""
+    model = Photo
+    extra = 0  # Не добавляем пустые строки автоматически
+    fields = ('image', 'position')
+    ordering = ('position',)
+    help_text = 'Позиция определяет группу фотографий для карусели'
 
 
 @admin.register(Place)
@@ -8,14 +17,12 @@ class PlaceAdmin(admin.ModelAdmin):
     list_display = ('title', 'latitude', 'longitude', 'created_at')
     list_filter = ('created_at',)
     search_fields = ('title', 'description_short')
-    readonly_fields = ('created_at', 'updated_at', 'image_preview')
+    readonly_fields = ('created_at', 'updated_at')
+    inlines = [PhotoInline]
     
     fieldsets = (
         ('Основная информация', {
             'fields': ('title', 'description_short', 'description_long')
-        }),
-        ('Изображение', {
-            'fields': ('image', 'image_preview')
         }),
         ('Координаты', {
             'fields': ('latitude', 'longitude')
@@ -25,9 +32,11 @@ class PlaceAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
-    
-    def image_preview(self, obj):
-        if obj.image:
-            return format_html('<img src="{}" style="max-height: 200px; max-width: 200px; border: 1px solid #ddd; border-radius: 4px;" />', obj.image.url)
-        return "Нет изображения"
-    image_preview.short_description = 'Превью изображения'
+
+
+@admin.register(Photo)
+class PhotoAdmin(admin.ModelAdmin):
+    list_display = ('place', 'position', 'created_at')
+    list_filter = ('place', 'created_at')
+    search_fields = ('place__title',)
+    ordering = ('place', 'position')

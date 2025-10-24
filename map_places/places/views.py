@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from .models import Place
 
 
@@ -27,24 +27,40 @@ def places_json(request):
 
 
 def place_detail(request, place_id):
-    """Детальная информация о месте"""
+    """Детальная информация о месте - возвращает JSON как текст"""
     try:
         place = Place.objects.get(id=place_id)
         
-        # Если запрос с Accept: application/json, возвращаем JSON
-        if request.headers.get('Accept') == 'application/json' or 'application/json' in request.headers.get('Accept', ''):
-            return JsonResponse({
-                'title': place.title,
-                'description_short': place.description_short,
-                'description_long': place.description_long,
-                'coordinates': place.coordinates,
-                'id': place.id,
-                'image_url': place.image.url if place.image else None
-            })
+        # Формируем массив изображений только из фотографий
+        imgs = []
         
-        # Иначе возвращаем HTML страницу
-        return render(request, 'places/place_detail.html', {'place': place})
+        # Группируем фотографии по позициям
+        photos_by_position = {}
+        for photo in place.photos.all().order_by('position', 'created_at'):
+            if photo.position not in photos_by_position:
+                photos_by_position[photo.position] = []
+            photos_by_position[photo.position].append(photo.image.url)
+        
+        # Добавляем фотографии в порядке позиций
+        for position in sorted(photos_by_position.keys()):
+            imgs.extend(photos_by_position[position])
+        
+        # Создаем JSON как строку
+        import json
+        data = {
+            'title': place.title,
+            'imgs': imgs,
+            'description_short': place.description_short,
+            'description_long': place.description_long,
+            'coordinates': {
+                'lng': str(place.longitude),
+                'lat': str(place.latitude)
+            }
+        }
+        
+        # Возвращаем JSON как обычный текст
+        return HttpResponse(json.dumps(data, ensure_ascii=False, indent=2), 
+                          content_type='text/plain; charset=utf-8')
     except Place.DoesNotExist:
-        if request.headers.get('Accept') == 'application/json' or 'application/json' in request.headers.get('Accept', ''):
-            return JsonResponse({'error': 'Place not found'}, status=404)
-        return render(request, 'places/place_not_found.html')
+        return HttpResponse('{"error": "Place not found"}', 
+                          status=404, content_type='text/plain; charset=utf-8')

@@ -284,7 +284,7 @@
         sidebarApp.selectedPlace = {
           title: data.title,
           placeId: placeId,
-          imgs: data.image_url ? [data.image_url] : [],
+          imgs: data.imgs || [],
           short_description: data.description_short,
           long_description: data.description_long,
         };
