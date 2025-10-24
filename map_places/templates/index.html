@@ -57,36 +57,39 @@
 
       <div class="place-description" v-if="selectedPlace">
 
-        <img v-if="mainPhotoSrc" v-bind:src="mainPhotoSrc" class="d-block shadow mb-3 rounded" v-bind:alt="selectedPlace.title">
-
         <h5 class="mb-3">{{ selectedPlace.title }}</h5>
 
         <div v-html="selectedPlace.short_description" class="mb-3"></div>
 
-        <div id="place-photos" class="carousel slide mb-3 shadow" data-ride="carousel" data-interval="5000">
-          <ol class="carousel-indicators">
-            <template v-for="(img, index) in carouselImgs" :key="img">
-              <li v-on:click="handlePhotosClick(index)" v-bind:class="{active: index==0}"></li>
-            </template>
-          </ol>
-          <div class="carousel-inner">
-            <template v-for="(img, index) in carouselImgs" :key="img">
-              <div v-bind:class="{'carousel-item bg-light': 1, active: index==0}">
-                <img v-bind:src="img" class="d-block w-100" v-bind:alt="selectedPlace.title">
-              </div>
-            </template>
-          </div>
-          <template v-if="carouselImgs.length">
-            <a class="carousel-control-prev" v-on:click="handlePhotosClick('prev')" role="button">
+        <!-- Множественные карусели по позициям -->
+        <template v-for="(imgs, position) in selectedPlace.imgs_by_position" :key="position">
+          <div v-if="imgs.length > 1" class="carousel slide mb-3 shadow" :data-ride="'carousel-' + position" data-interval="5000">
+            <ol class="carousel-indicators">
+              <template v-for="(img, index) in imgs" :key="img">
+                <li v-on:click="handlePhotosClick(index, position)" v-bind:class="{active: index==0}"></li>
+              </template>
+            </ol>
+            <div class="carousel-inner">
+              <template v-for="(img, index) in imgs" :key="img">
+                <div v-bind:class="{'carousel-item bg-light': 1, active: index==0}">
+                  <img v-bind:src="img" class="d-block w-100" v-bind:alt="selectedPlace.title">
+                </div>
+              </template>
+            </div>
+            <a class="carousel-control-prev" v-on:click="handlePhotosClick('prev', position)" role="button">
               <span class="carousel-control-prev-icon" aria-hidden="true"></span>
               <span class="sr-only">Previous</span>
             </a>
-            <a class="carousel-control-next" v-on:click="handlePhotosClick('next')" role="button">
+            <a class="carousel-control-next" v-on:click="handlePhotosClick('next', position)" role="button">
               <span class="carousel-control-next-icon" aria-hidden="true"></span>
               <span class="sr-only">Next</span>
             </a>
-          </template>
-        </div>
+          </div>
+          <!-- Одиночные изображения -->
+          <div v-else-if="imgs.length === 1" class="mb-3">
+            <img v-bind:src="imgs[0]" class="d-block w-100 shadow rounded" v-bind:alt="selectedPlace.title">
+          </div>
+        </template>
 
         <div v-html="selectedPlace.long_description"></div>
       </div>
@@ -226,10 +229,8 @@
           return this.loadingPlaceId !== null;
         },
         mainPhotoSrc: function () {
-          if (!this.selectedPlace || !this.selectedPlace.imgs.length){
-            return null;
-          }
-          return this.selectedPlace.imgs[0];
+          // Убираем начальное фото, так как теперь все фотографии в каруселях
+          return null;
         },
         carouselImgs: function () {
           if (!this.selectedPlace || !this.selectedPlace.imgs.length){
@@ -240,15 +241,21 @@
       },
       updated: function () {
         this.$nextTick(function () {
-          // Код, будет запущен только после обновления всех представлений
-          $('#place-photos').carousel();
+          // Инициализируем все карусели по позициям
+          for (let position in this.selectedPlace.imgs_by_position) {
+            $('[data-ride="carousel-' + position + '"]').carousel();
+          }
         })
       },
       methods: {
-        handlePhotosClick: function(slideId='next') {
+        handlePhotosClick: function(slideId='next', position=null) {
           // default event handlers of Bootstrap Carousel conflict with Leaflet
           // so custom handler will mimic expected carousel behaviour
-          $('#place-photos').carousel(slideId);
+          if (position !== null) {
+            $('[data-ride="carousel-' + position + '"]').carousel(slideId);
+          } else {
+            $('#place-photos').carousel(slideId);
+          }
         }
       },
     });
@@ -285,6 +292,7 @@
           title: data.title,
           placeId: placeId,
           imgs: data.imgs || [],
+          imgs_by_position: data.imgs_by_position || {},
           short_description: data.description_short,
           long_description: data.description_long,
         };

@@ -31,25 +31,26 @@ def place_detail(request, place_id):
     try:
         place = Place.objects.get(id=place_id)
         
-        # Формируем массив изображений только из фотографий
-        imgs = []
+        # Формируем массив изображений, группируя по позициям
+        imgs_by_position = {}
         
         # Группируем фотографии по позициям
-        photos_by_position = {}
         for photo in place.photos.all().order_by('position', 'created_at'):
-            if photo.position not in photos_by_position:
-                photos_by_position[photo.position] = []
-            photos_by_position[photo.position].append(photo.image.url)
+            if photo.position not in imgs_by_position:
+                imgs_by_position[photo.position] = []
+            imgs_by_position[photo.position].append(photo.image.url)
         
-        # Добавляем фотографии в порядке позиций
-        for position in sorted(photos_by_position.keys()):
-            imgs.extend(photos_by_position[position])
+        # Создаем плоский массив для обратной совместимости
+        imgs = []
+        for position in sorted(imgs_by_position.keys()):
+            imgs.extend(imgs_by_position[position])
         
         # Создаем JSON как строку
         import json
         data = {
             'title': place.title,
             'imgs': imgs,
+            'imgs_by_position': imgs_by_position,  # Добавляем группировку по позициям
             'description_short': place.description_short,
             'description_long': place.description_long,
             'coordinates': {
