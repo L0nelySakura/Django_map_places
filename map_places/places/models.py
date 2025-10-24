@@ -87,3 +87,10 @@ class Photo(models.Model):
 
     def __str__(self):
         return f'{self.place.title} - Фото {self.position}'
+
+    def save(self, *args, **kwargs):
+        # Если позиция не указана, устанавливаем следующую доступную
+        if not self.position:
+            max_position = Photo.objects.filter(place=self.place).aggregate(models.Max('position'))['position__max']
+            self.position = (max_position or 0) + 1
+        super().save(*args, **kwargs)

@@ -1,0 +1,45 @@
+/* Стили для перетаскивания */
+.drag-handle-cell {
+    width: 30px;
+    text-align: center;
+    vertical-align: middle;
+    cursor: move;
+}
+
+.drag-handle {
+    color: #666;
+    font-size: 16px;
+    font-weight: bold;
+    user-select: none;
+}
+
+.drag-handle:hover {
+    color: #333;
+}
+
+/* Стили для Sortable.js */
+.sortable-ghost {
+    opacity: 0.4;
+    background-color: #f8f8f8;
+}
+
+.sortable-chosen {
+    background-color: #f0f0f0;
+}
+
+.sortable-drag {
+    opacity: 0.8;
+    transform: rotate(5deg);
+}
+
+/* Улучшаем внешний вид inline-форм */
+.inline-related .form-row {
+    border-bottom: 1px solid #eee;
+    padding: 8px 0;
+}
+
+.inline-related h3 {
+    background: #f8f8f8;
+    padding: 8px;
+    margin: 0;
+}
