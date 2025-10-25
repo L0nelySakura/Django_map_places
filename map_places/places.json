@@ -8,8 +8,8 @@
             "lng": 30.3146
         },
         "imgs": [
-            "https://www.spbmuzei.ru/wp-content/uploads/2023/07/ermitag_smal1.jpg",
-            "https://kuda-spb.ru/uploads/fc9fe4fc93269ee4c81e3d6d60c1c8ad.jpg"
+            "http://www.spbmuzei.ru/wp-content/uploads/2023/07/ermitag_smal1.jpg",
+            "http://kuda-spb.ru/uploads/fc9fe4fc93269ee4c81e3d6d60c1c8ad.jpg"
         ]
     },
     {
@@ -21,7 +21,34 @@
             "lng": 39.6175
         },
         "imgs": [
-            "https://library.vladimir.ru/wp-content/uploads/2022/01/0.jpg"
+            "http://library.vladimir.ru/wp-content/uploads/2022/01/0.jpg"
+        ]
+    },
+    {
+        "title": "Тест3",
+        "description_short": "Краткое 3",
+        "description_long": "<p>Привет!!.</p>",
+        "coordinates": {
+            "lat": 56.7520,
+            "lng": 39.6175
+        },
+        "imgs": [
+            "https://img1.picmix.com/output/stamp/normal/0/7/9/8/2738970_5bf3e.png",
+            "https://img1.picmix.com/output/stamp/normal/0/7/9/8/2738970_5bf3e.png",
+            "https://img1.picmix.com/output/stamp/normal/0/7/9/8/2738970_5bf3e.png"
+        ]
+    },
+    {
+        "title": "Красная площадь",
+        "description_short": "Главная площадь Москвы",
+        "description_long": "<p>Красная площадь — главная площадь Москвы, расположенная в центре радиально-кольцевой планировки города между Московским Кремлём и Китай-городом.</p><p>Площадь тянется вдоль северо-восточной стены Кремля от Кремлёвского проезда и проезда Воскресенские Ворота до Васильевского спуска, выходящего к Кремлёвской набережной.</p>",
+        "coordinates": {
+            "lat": 55.7539,
+            "lng": 37.6208
+        },
+        "imgs": [
+            "http://media-1.gorbilet.com/f2/cd/67/shutterstock_594311048-min_QUfXtxI.jpg",
+            "http://moskultura.ru/wp-content/uploads/2022/08/krasn_pl1-1140x668.jpg"
         ]
     }
 ]
