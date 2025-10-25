@@ -74,7 +74,7 @@ class Photo(models.Model):
     position = models.PositiveIntegerField(
         verbose_name='Позиция',
         help_text='Группа фотографий для карусели (1, 2, 3...)',
-        default=1
+        default=0
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
@@ -90,8 +90,9 @@ class Photo(models.Model):
         return f'{self.place.title} - Фото {self.position}'
 
     def save(self, *args, **kwargs):
-        # Если позиция не указана, устанавливаем следующую доступную
-        if not self.position:
-            max_position = Photo.objects.filter(place=self.place).aggregate(models.Max('position'))['position__max']
+        if not self.position or self.position == 0:
+            max_position = Photo.objects.filter(
+                place=self.place
+            ).aggregate(models.Max('position'))['position__max']
             self.position = (max_position or 0) + 1
         super().save(*args, **kwargs)
