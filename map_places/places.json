@@ -1,0 +1,27 @@
+[
+    {
+        "title": "Эрмитаж",
+        "description_short": "Один из крупнейших художественных музеев мира",
+        "description_long": "<p>Государственный Эрмитаж — музей изобразительного и декоративно-прикладного искусства, расположенный в Санкт-Петербурге. Один из крупнейших и самых значительных художественных и культурно-исторических музеев России и мира.</p>",
+        "coordinates": {
+            "lat": 59.9398,
+            "lng": 30.3146
+        },
+        "imgs": [
+            "https://www.spbmuzei.ru/wp-content/uploads/2023/07/ermitag_smal1.jpg",
+            "https://kuda-spb.ru/uploads/fc9fe4fc93269ee4c81e3d6d60c1c8ad.jpg"
+        ]
+    },
+    {
+        "title": "Тест2",
+        "description_short": "Краткое 2",
+        "description_long": "<p>Длинное 2.</p>",
+        "coordinates": {
+            "lat": 57.7520,
+            "lng": 39.6175
+        },
+        "imgs": [
+            "https://library.vladimir.ru/wp-content/uploads/2022/01/0.jpg"
+        ]
+    }
+]
