@@ -42,7 +42,7 @@ class PhotoInline(admin.TabularInline):
 
     def drag_handle(self, obj):
         """Иконка для перетаскивания"""
-        return format_html('<span class="drag-handle">⋮-⋮</span>')
+        return format_html('<span class="drag-handle">⋮⋮</span>')
 
     drag_handle.short_description = 'Смена позиции'
 

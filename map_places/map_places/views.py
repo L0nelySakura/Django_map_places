@@ -27,11 +27,7 @@ def home_page(request):
                 "detailsUrl": f"/places/{place.id}/"
             }
         })
-    
-    # Отладочная информация
-    print(f"Found {len(places)} places in database")
-    print(f"GeoJSON: {places_geojson}")
-    
+
     # Правильно сериализуем JSON
     places_geojson_json = json.dumps(places_geojson, ensure_ascii=False)
     

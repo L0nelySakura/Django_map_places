@@ -11,6 +11,13 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os.path
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Загружаем .env файл
+try:
+    load_dotenv()
+except Exception as e:
+    print("Ошибка при чтении .env файла:", e)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,13 +27,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-8n*hwco-9pco=618l&1f^9w8!%c))+i7#n$x7xqqz$irtc6l+*'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 ALLOWED_HOSTS = []
+if os.getenv('ALLOWED_HOSTS'):
+    ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
+if not DEBUG:
+    # Production настройки
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # Application definition
 
@@ -79,7 +94,7 @@ WSGI_APPLICATION = 'map_places.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / os.getenv('DATABASE_NAME', 'db.sqlite3'),
     }
 }
 
@@ -136,27 +151,20 @@ TINYMCE_DEFAULT_CONFIG = {
     'width': '100%',
     'cleanup_on_startup': True,
     'custom_undo_redo_levels': 20,
-    'selector': 'textarea',
+    'selector': 'textarea#id_description_long',
     'theme': 'silver',
     'plugins': '''
-        textcolor save link image media preview codesample contextmenu
-        table code lists fullscreen insertdatetime nonbreaking
-        contextmenu directionality searchreplace wordcount visualblocks
-        visualchars code fullscreen autolink lists charmap print hr
-        anchor pagebreak
+        link image table preview codesample lists
+        code fullscreen autolink wordcount
     ''',
-    'toolbar1': '''
-        fullscreen preview bold italic underline | fontselect,
-        fontsizeselect | forecolor backcolor | alignleft alignright |
-        aligncenter alignjustify | indent outdent | bullist numlist table |
-        | link image media | codesample |
+    'toolbar': '''
+        undo redo | bold italic underline | 
+        alignleft aligncenter alignright alignjustify | 
+        bullist numlist | link image table | 
+        codesample | code | fullscreen
     ''',
-    'toolbar2': '''
-        visualblocks visualchars |
-        charmap hr pagebreak nonbreaking anchor | code |
-    ''',
-    'contextmenu': 'formats | link image',
-    'menubar': True,
+    'menubar': False,
     'statusbar': True,
     'language': 'ru',
+    'branding': False,
 }
