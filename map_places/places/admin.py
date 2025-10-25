@@ -30,6 +30,18 @@ class PhotoForm(ModelForm):
             'image': forms.FileInput(attrs={'onchange': 'previewImage(this)'})
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Для новых фото автоматически устанавливаем позицию
+        if not self.instance.pk:  # Если объект новый
+            place = self.initial.get('place')
+            if place:
+                from django.db.models import Max  # ← Импортируем только Max
+                max_position = Photo.objects.filter(
+                    place=place
+                ).aggregate(Max('position'))['position__max']
+                self.initial['position'] = (max_position or 0) + 1
+
 
 class PhotoInline(admin.TabularInline):
     model = Photo
